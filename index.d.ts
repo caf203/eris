@@ -65,7 +65,7 @@ declare namespace Eris {
   type ConverterCommand = "./ffmpeg" | "./avconv" | "ffmpeg" | "avconv";
 
   // Webhook
-  type MessageWebhookContent = Pick<WebhookPayload, "content" | "embeds">;
+  type MessageWebhookContent = Pick<WebhookPayload, "content" | "embeds" | "file" | "allowedMentions">;
 
   // INTERFACES
   // Internals
@@ -188,15 +188,14 @@ declare namespace Eris {
     opusOnly?: boolean;
     /** @deprecated */
     ratelimiterOffset?: number;
-    /** @deprecated */
     requestTimeout?: number;
     reconnectDelay?: ReconnectDelayFunction;
-    rest?: ClientRESTOptions;
+    rest?: RequestHandlerOptions;
     restMode?: boolean;
     seedVoiceConnections?: boolean;
     ws?: unknown;
   }
-  interface ClientRESTOptions {
+  interface RequestHandlerOptions {
     agent?: HTTPSAgent;
     baseURL?: string;
     disableLatencyCompensation?: boolean;
@@ -229,19 +228,19 @@ declare namespace Eris {
     caseInsensitive?: boolean;
     cooldown?: number;
     cooldownExclusions?: CommandCooldownExclusions;
-    cooldownMessage?: string | GenericCheckFunction<string> | false;
+    cooldownMessage?: MessageContent | GenericCheckFunction<MessageContent> | false;
     cooldownReturns?: number;
     defaultSubcommandOptions?: CommandOptions;
     deleteCommand?: boolean;
     description?: string;
     dmOnly?: boolean;
-    errorMessage?: string | GenericCheckFunction<string>;
+    errorMessage?: MessageContent | GenericCheckFunction<MessageContent>;
     fullDescription?: string;
     guildOnly?: boolean;
     hidden?: boolean;
     hooks?: Hooks;
-    invalidUsageMessage?: string | GenericCheckFunction<string> | false;
-    permissionMessage?: string | GenericCheckFunction<string> | false;
+    invalidUsageMessage?: MessageContent | GenericCheckFunction<MessageContent> | false;
+    permissionMessage?: MessageContent | GenericCheckFunction<MessageContent> | false;
     reactionButtons?: CommandReactionButtonsOptions[] | null;
     reactionButtonTimeout?: number;
     requirements?: CommandRequirements;
@@ -756,12 +755,13 @@ declare namespace Eris {
     repliedUser?: boolean;
   }
   interface Attachment {
+    content_type?: string;
     filename: string;
+    height?: number;
     id: string;
     proxy_url: string;
     size: number;
     url: string;
-    height?: number;
     width?: number;
   }
   interface MessageActivity {
@@ -858,7 +858,7 @@ declare namespace Eris {
     hoist?: boolean;
     mentionable?: boolean;
     name?: string;
-    permissions?: number;
+    permissions?: bigint | number;
   }
 
   // Voice
@@ -912,7 +912,7 @@ declare namespace Eris {
     avatarURL?: string;
     content?: string;
     embeds?: EmbedOptions[];
-    file?: { file: Buffer; name: string } | { file: Buffer; name: string }[];
+    file?: MessageFile | MessageFile[];
     tts?: boolean;
     username?: string;
     wait?: boolean;
@@ -1083,41 +1083,51 @@ declare namespace Eris {
       GUILD_INVITE_REMINDER: 22;
     };
     Permissions: {
-      createInstantInvite: 1;
-      kickMembers: 2;
-      banMembers: 4;
-      administrator: 8;
-      manageChannels: 16;
-      manageGuild: 32;
-      addReactions: 64;
-      viewAuditLogs: 128;
-      voicePrioritySpeaker: 256;
-      stream: 512;
-      readMessages: 1024;
-      sendMessages: 2048;
-      sendTTSMessages: 4096;
-      manageMessages: 8192;
-      embedLinks: 16384;
-      attachFiles: 32768;
-      readMessageHistory: 65536;
-      mentionEveryone: 131072;
-      externalEmojis: 262144;
-      viewGuildInsights: 524288;
-      voiceConnect: 1048576;
-      voiceSpeak: 2097152;
-      voiceMuteMembers: 4194304;
-      voiceDeafenMembers: 8388608;
-      voiceMoveMembers: 16777216;
-      voiceUseVAD: 33554432;
-      changeNickname: 67108864;
-      manageNicknames: 134217728;
-      manageRoles: 268435456;
-      manageWebhooks: 546870912;
-      manageEmojis: 1973741824;
-      all: 2147483647;
-      allGuild: 2080899263;
-      allText: 805829714;
-      allVoice: 871367441;
+      createInstantInvite: 1n;
+      kickMembers: 2n;
+      banMembers: 4n;
+      administrator: 8n;
+      manageChannels: 16n;
+      manageGuild: 32n;
+      addReactions: 64n;
+      viewAuditLog: 128n;
+      /** @deprecated */
+      viewAuditLogs: 128n;
+      voicePrioritySpeaker: 256n;
+      voiceStream: 512n;
+      /** @deprecated */
+      stream: 512n;
+      viewChannel: 1024n;
+      /** @deprecated */
+      readMessages: 1024n;
+      sendMessages: 2048n;
+      sendTTSMessages: 4096n;
+      manageMessages: 8192n;
+      embedLinks: 16384n;
+      attachFiles: 32768n;
+      readMessageHistory: 65536n;
+      mentionEveryone: 131072n;
+      useExternalEmojis: 262144n;
+      /** @deprecated */
+      externalEmojis: 262144n;
+      viewGuildInsights: 524288n;
+      voiceConnect: 1048576n;
+      voiceSpeak: 2097152n;
+      voiceMuteMembers: 4194304n;
+      voiceDeafenMembers: 8388608n;
+      voiceMoveMembers: 16777216n;
+      voiceUseVAD: 33554432n;
+      changeNickname: 67108864n;
+      manageNicknames: 134217728n;
+      manageRoles: 268435456n;
+      manageWebhooks: 536870912n;
+      manageEmojis: 1073741824n;
+      useSlashCommands: 2147483648n;
+      voiceRequestToSpeak: 4294967296n;
+      allGuild: 2080899262n;
+      allText: 2953313361n;
+      allVoice: 4629464849n;
+      all: 8589934591n;
     };
     REST_VERSION: 7;
     StickerFormats: {
@@ -1341,7 +1351,6 @@ declare namespace Eris {
     requestHandler: RequestHandler;
     shards: ShardManager;
     startTime: number;
-    token?: string;
     unavailableGuilds: Collection<UnavailableGuild>;
     uptime: number;
     user: ExtendedUser;
@@ -1492,8 +1501,8 @@ declare namespace Eris {
     editChannelPermission(
       channelID: string,
       overwriteID: string,
-      allow: number,
-      deny: number,
+      allow: bigint | number,
+      deny: bigint | number,
       type: string,
       reason?: string
     ): Promise<void>;
@@ -1689,22 +1698,22 @@ declare namespace Eris {
     caseInsensitive: boolean;
     cooldown: number;
     cooldownExclusions: CommandCooldownExclusions;
-    cooldownMessage: string | false | GenericCheckFunction<string>;
+    cooldownMessage: MessageContent | false | GenericCheckFunction<MessageContent>;
     cooldownReturns: number;
     defaultSubcommandOptions: CommandOptions;
     deleteCommand: boolean;
     description: string;
     dmOnly: boolean;
-    errorMessage: string | GenericCheckFunction<string>;
+    errorMessage: MessageContent | GenericCheckFunction<MessageContent>;
     fullDescription: string;
     fullLabel: string;
     guildOnly: boolean;
     hidden: boolean;
     hooks: Hooks;
-    invalidUsageMessage: string | false | GenericCheckFunction<string>;
+    invalidUsageMessage: MessageContent | false | GenericCheckFunction<MessageContent>;
     label: string;
     parentCommand?: Command;
-    permissionMessage: string | false | GenericCheckFunction<string>;
+    permissionMessage: MessageContent | false | GenericCheckFunction<MessageContent>;
     reactionButtons: null | CommandReactionButtons[];
     reactionButtonTimeout: number;
     requirements: CommandRequirements;
@@ -1954,8 +1963,8 @@ declare namespace Eris {
     edit(options: Omit<EditChannelOptions, "icon" | "ownerID">, reason?: string): Promise<this>;
     editPermission(
       overwriteID: string,
-      allow: number,
-      deny: number,
+      allow: bigint | number,
+      deny: bigint | number,
       type: PermissionType,
       reason?: string
     ): Promise<PermissionOverwrite>;
@@ -2153,8 +2162,8 @@ declare namespace Eris {
   }
 
   export class Permission extends Base {
-    allow: number;
-    deny: number;
+    allow: bigint;
+    deny: bigint;
     json: Record<keyof Constants["Permissions"], boolean>;
     constructor(allow: number | string, deny: number | string);
     has(permission: keyof Constants["Permissions"]): boolean;
@@ -2229,14 +2238,14 @@ declare namespace Eris {
   }
 
   export class RequestHandler implements SimpleJSON {
-    agent: HTTPSAgent;
-    baseURL: string;
     globalBlock: boolean;
     latencyRef: LatencyRef;
+    options: RequestHandlerOptions;
     ratelimits: { [route: string]: SequentialBucket };
     readyQueue: (() => void)[];
-    requestTimeout: number;
     userAgent: string;
+    constructor(client: Client, options?: RequestHandlerOptions);
+    /** @deprecated */
     constructor(client: Client, forceQueueing?: boolean);
     globalUnblock(): void;
     request(method: RequestMethod, url: string, auth?: boolean, body?: { [s: string]: unknown }, file?: MessageFile, _route?: string, short?: boolean): Promise<Record<string, unknown>>;
@@ -2416,7 +2425,6 @@ declare namespace Eris {
     discriminator: string;
     id: string;
     mention: string;
-    premiumType?: 0 | 1 | 2;
     publicFlags?: number;
     staticAvatarURL: string;
     system: boolean;
