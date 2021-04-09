@@ -3,6 +3,13 @@ Eris [![NPM version](https://img.shields.io/npm/v/eris.svg?style=flat-square&col
 
 A Node.js wrapper for interfacing with Discord.
 
+Changes
+-------
+
+- useMaxConcurrency requires you to manually specify cluster start and end, maxShards auto will not help
+- Deprecated permissions (stream, readMessages, externalEmojis, viewAuditLog) are removed
+- Some choice properties in Member & User are removed
+
 Installing
 ----------
 
