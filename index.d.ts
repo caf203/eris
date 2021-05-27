@@ -1019,6 +1019,9 @@ declare namespace Eris {
   }
 
   // Voice
+  interface EditStageInstanceOptions {
+    topic: string;
+  }
   interface VoiceConnectData {
     channel_id: string;
     endpoint: string;
@@ -1661,6 +1664,7 @@ declare namespace Eris {
     createPrivateThread(channelID: string, options: CreateThreadOptions): Promise<PrivateThreadChannel>;
     createPublicThread(channelID: string, options: CreateThreadOptions): Promise<NewsThreadChannel | PublicThreadChannel>;
     createRole(guildID: string, options?: RoleOptions | Role, reason?: string): Promise<Role>;
+    createStageInstance(channelID: string, topic: string): Promise<StageInstance>;
     crosspostMessage(channelID: string, messageID: string): Promise<Message>;
     deleteChannel(channelID: string, reason?: string): Promise<void>;
     deleteChannelPermission(channelID: string, overwriteID: string, reason?: string): Promise<void>;
@@ -1675,6 +1679,7 @@ declare namespace Eris {
     deleteRole(guildID: string, roleID: string, reason?: string): Promise<void>;
     deleteSelfConnection(platform: string, id: string): Promise<void>;
     deleteSelfPremiumSubscription(): Promise<void>;
+    deleteStageInstance(channelID: string): Promise<void>;
     deleteUserNote(userID: string): Promise<void>;
     deleteWebhook(webhookID: string, token?: string, reason?: string): Promise<void>;
     deleteWebhookMessage(webhookID: string, token: string, messageID: string): Promise<void>;
@@ -1721,6 +1726,7 @@ declare namespace Eris {
       data: { friendSync: boolean; visibility: number }
     ): Promise<Connection>;
     editSelfSettings(data: UserSettings): Promise<UserSettings>;
+    editStageInstance(channelID: string, options: EditStageInstanceOptions): Promise<StageInstance>;
     editStatus(status: Status, activities?: ActivityPartial<BotActivityType>[] | ActivityPartial<BotActivityType>): void;
     editStatus(activities?: ActivityPartial<BotActivityType>[] | ActivityPartial<BotActivityType>): void;
     editUserNote(userID: string, note: string): Promise<void>;
@@ -1835,6 +1841,7 @@ declare namespace Eris {
       status: number;
     }[]>;
     getSelfSettings(): Promise<UserSettings>;
+    getStageInstance(channelID: string): Promise<StageInstance>;
     getThreadMembers(channelID: string): Promise<ThreadMember[]>;
     getUserProfile(userID: string): Promise<UserProfile>;
     getVoiceRegions(guildID?: string): Promise<VoiceRegion[]>;
@@ -2600,6 +2607,20 @@ declare namespace Eris {
   export class StageChannel extends VoiceChannel {
     topic?: string;
     type: 13;
+    createInstance(topic: string): Promise<StageInstance>;
+    deleteInstance(): Promise<void>;
+    editInstance(options: EditStageInstanceOptions): Promise<StageInstance>;
+    getInstance(): Promise<StageInstance>;
+  }
+
+  export class StageInstance extends Base {
+    client: Client;
+    channel: StageChannel | Uncached;
+    guild: Guild | Uncached;
+    topic: string;
+    constructor(data: BaseData, client: Client);
+    delete(): Promise<void>;
+    edit(options: EditStageInstanceOptions): Promise<StageInstance>;
   }
 
   export class StoreChannel extends GuildChannel {
