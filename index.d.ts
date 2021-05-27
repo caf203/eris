@@ -2291,7 +2291,7 @@ declare namespace Eris {
     game: Activity | null;
     guild: Guild;
     id: string;
-    joinedAt: number;
+    joinedAt: number | null;
     mention: string;
     nick: string | null;
     pending?: boolean;
