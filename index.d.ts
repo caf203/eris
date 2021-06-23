@@ -2398,7 +2398,9 @@ declare namespace Eris {
     getPins(): Promise<Message<NewsChannel>[]>;
   }
 
-  export class NewsThreadChannel extends ThreadChannel {}
+  export class NewsThreadChannel extends ThreadChannel {
+    type: 10;
+  }
 
   export class Permission extends Base {
     allow: bigint;
@@ -2463,9 +2465,13 @@ declare namespace Eris {
     unsendMessage(messageID: string): Promise<void>;
   }
   
-  export class PrivateThreadChannel extends ThreadChannel {}
+  export class PrivateThreadChannel extends ThreadChannel {
+    type: 12;
+  }
 
-  export class PublicThreadChannel extends ThreadChannel {}
+  export class PublicThreadChannel extends ThreadChannel {
+    type: 11;
+  }
 
   export class Relationship extends Base implements Omit<Presence, "activities"> {
     activities: Activity[] | null;
@@ -2700,6 +2706,7 @@ declare namespace Eris {
     ownerID: string;
     rateLimitPerUser: number;
     threadMetadata: ThreadMetadata;
+    type: 10 | 11 | 12;
     constructor(data: BaseData, client: Client, messageLimit?: number);
     getMembers(): Promise<ThreadMember[]>;
     join(userID?: string): Promise<void>;
